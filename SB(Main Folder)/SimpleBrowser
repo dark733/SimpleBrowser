@@ -1,0 +1,55 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.event.*;
+import java.net.*;
+import java.io.*;
+
+public class SimpleBrowser extends JFrame {
+    private JTextField addressBar;
+    private JEditorPane display;
+
+    public SimpleBrowser() {
+        super("Simple Browser");
+
+        addressBar = new JTextField();
+        addressBar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                loadPage(event.getActionCommand());
+            }
+        });
+        add(addressBar, BorderLayout.NORTH);
+
+        display = new JEditorPane();
+        display.setEditable(false);
+        display.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent event) {
+                if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    loadPage(event.getURL().toString());
+                }
+            }
+        });
+        add(new JScrollPane(display), BorderLayout.CENTER);
+
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+    }
+
+    private void loadPage(String url) {
+        try {
+            display.setPage(url);
+            addressBar.setText(url);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error loading page: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new SimpleBrowser();
+            }
+        });
+    }
+}
